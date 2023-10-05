@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Autofac" Version="7.1.0" />
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
@@ -14,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\VebTech.Application.Requests\VebTech.Application.Requests.csproj" />
+      <ProjectReference Include="..\VebTech.Infrastructure.Database\VebTech.Infrastructure.Database.csproj" />
     </ItemGroup>
 
 </Project>
