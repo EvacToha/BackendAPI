@@ -9,6 +9,7 @@ public class UpdateUser
 {
     public class Request : UserModel, IRequest<UserModel>
     {
+        public long QueryId { get; set; }
     }
 
     public class GetStudentHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
@@ -22,6 +23,7 @@ public class UpdateUser
 
         public async Task<UserModel> Handle(Request request, CancellationToken cancellationToken)
         {
+            request.UserId = request.QueryId;
             return await _studentService.UpdateUser(request, cancellationToken);
         }
 

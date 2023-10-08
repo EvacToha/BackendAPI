@@ -14,11 +14,11 @@ public class AddUser
         public long UserId { get; set; }
     }
 
-    public class GetUserHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
+    public class AddUserHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
     {
         private readonly IUserService _userService;
         
-        public GetUserHandler(IUserService userService)
+        public AddUserHandler(IUserService userService)
         {
             _userService = userService;
         }

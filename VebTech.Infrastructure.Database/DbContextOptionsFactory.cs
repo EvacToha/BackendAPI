@@ -9,7 +9,7 @@ public static class DbContextOptionsFactory
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json").Build();
+            .AddJsonFile(Directory.GetCurrentDirectory() + "/appsettings.json").Build();
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         var builder = new DbContextOptionsBuilder<DatabaseContext>();
         builder.UseSqlServer(connectionString);

@@ -4,6 +4,7 @@ using VebTech.API.Controllers.Constants;
 using VebTech.Application.Requests.User;
 using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Models.Queries;
+using VebTech.Infrastructure.Database;
 
 namespace VebTech.API.Controllers;
 
@@ -11,7 +12,7 @@ public class UserController : BaseController
 {
     private readonly IMediator _mediator;
 
-    public UserController(IMediator mediator)
+    public UserController(IMediator mediator, DatabaseContext dbContext)
     {
         _mediator = mediator;
     }
@@ -26,6 +27,19 @@ public class UserController : BaseController
                 Age = request.Age 
             }, cancellationToken);
     
+    [HttpPost(RouteNames.Id)]
+    public async Task<User> AddUserRole(
+        [FromQuery] string roleName,
+        [FromRoute] long userId,
+        CancellationToken cancellationToken) =>
+        await _mediator.Send(
+            new AddUserRole.Request 
+            {  
+                UserId = userId,
+                RoleName = roleName,
+            }, cancellationToken);
+
+    
     [HttpGet(RouteNames.Id)]
     public async Task<User> GetUser([FromRoute] long userId, CancellationToken cancellationToken) =>
         await _mediator.Send(
@@ -34,24 +48,26 @@ public class UserController : BaseController
                 UserId = userId
             }, cancellationToken);
     
-    [HttpGet]
+    [HttpPost("/api/users")]
     public async Task<PaginatedList<User>> GetUsers(
         [FromQuery] int pageNumber,
         [FromQuery] int pageSize,
+        [FromBody] Filter filter,
         CancellationToken cancellationToken) =>
         await _mediator.Send(
             new GetUsers.Request
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
+                Filter = filter
             }, cancellationToken);
 
-    [HttpPut]
-    public async Task<User> UpdateUser(UpdateUser.Request request, CancellationToken cancellationToken) =>
+    [HttpPut(RouteNames.Id)]
+    public async Task<User> UpdateUser([FromRoute] long userId, UpdateUser.Request request, CancellationToken cancellationToken) =>
         await _mediator.Send(
             new UpdateUser.Request
-            {
-                UserId = request.UserId,
+            {  
+                QueryId = userId,
                 Age = request.Age,
                 Email = request.Email,
                 Roles = request.Roles

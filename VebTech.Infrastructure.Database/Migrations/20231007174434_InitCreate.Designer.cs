@@ -11,7 +11,7 @@ using VebTech.Infrastructure.Database;
 namespace VebTech.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231005184134_InitCreate")]
+    [Migration("20231007174434_InitCreate")]
     partial class InitCreate
     {
         /// <inheritdoc />

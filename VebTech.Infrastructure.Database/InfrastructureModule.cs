@@ -10,7 +10,7 @@ public class InfrastructureModule : Module
     {
         builder
             .RegisterType<DatabaseContext>()
-            .WithParameter("option", DbContextOptionsFactory.Get())
+            .WithParameter("options", DbContextOptionsFactory.Get())
             .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())

@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\VebTech.Domain.Models\VebTech.Domain.Models.csproj" />
+      <ProjectReference Include="..\VebTech.Domain.Services\VebTech.Domain.Services.csproj" />
     </ItemGroup>
 
     <ItemGroup>
