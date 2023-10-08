@@ -52,14 +52,14 @@ public class UserController : BaseController
     public async Task<PaginatedList<User>> GetUsers(
         [FromQuery] int pageNumber,
         [FromQuery] int pageSize,
-        [FromBody] Filter filter,
+        [FromBody] Modifiers modifiers,
         CancellationToken cancellationToken) =>
         await _mediator.Send(
             new GetUsers.Request
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                Filter = filter
+                Modifiers = modifiers
             }, cancellationToken);
 
     [HttpPut(RouteNames.Id)]

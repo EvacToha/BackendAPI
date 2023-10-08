@@ -15,7 +15,7 @@ public class GetUsers
 
         public int PageSize { get; set; }
 
-        public Filter Filter { get; set; }
+        public Modifiers Modifiers { get; set; }
     }
 
     public class GetUsersHandler : IRequestHandler<Request, PaginatedList<UserModel>>,
@@ -32,21 +32,34 @@ public class GetUsers
         {
             var query = _userService.GetUsers();
 
-            if (request.Filter.NameFilter != null)
-                query = query.FilterByName(request.Filter.NameFilter);
+            if (request.Modifiers.Filter.NameFilter != null)
+                query = query.FilterByName(request.Modifiers.Filter.NameFilter);
 
-            if (request.Filter.AgeFilter != null)
-                query = query.FilterByAge(request.Filter.AgeFilter);
+            if (request.Modifiers.Filter.AgeFilter != null)
+                query = query.FilterByAge(request.Modifiers.Filter.AgeFilter);
             
-            if (request.Filter.EmailFilter != null)
+            if (request.Modifiers.Filter.EmailFilter != null)
             {
-                query = query.FilterByEmail(request.Filter.EmailFilter);
+                query = query.FilterByEmail(request.Modifiers.Filter.EmailFilter);
             }
-            if (request.Filter.RoleFilter != null)
+            if (request.Modifiers.Filter.RoleFilter != null)
             {
-                query = query.FilterByRole(request.Filter.RoleFilter);
+                query = query.FilterByRole(request.Modifiers.Filter.RoleFilter);
             }
 
+            foreach (var sortingAction in request.Modifiers.Sorting.SortingActions)
+            {
+                if (sortingAction.IsAscending)
+                {
+                    query = query.OrderBy(Sorting.GetSortProperty(sortingAction.AttributeName));
+                }
+                else
+                {
+                    query = query.OrderByDescending(Sorting.GetSortProperty(sortingAction.AttributeName));
+                }
+            }
+            
+            
             var totalCount = query.Count();
             
             if (request.PageNumber != default && request.PageSize != default)
