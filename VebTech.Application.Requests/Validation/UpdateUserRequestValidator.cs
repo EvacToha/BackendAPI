@@ -33,10 +33,10 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUser.Request>
             .MaximumLength(ValidationConstants.StringMaximumLength)
             .WithMessage(ValidationMessages.MaximumLengthValidator);
         
-        RuleFor(r => (int)r.Age)
+        RuleFor(r => r.Age)
             .NotEmpty()
             .WithMessage(ValidationMessages.NotEmptyValidator)
-            .GreaterThan(0)
+            .GreaterThan(ValidationConstants.AgeMinimumValue)
             .WithMessage(ValidationMessages.IncorrectAgeValidator);
     }
 }
