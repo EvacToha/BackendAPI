@@ -12,19 +12,19 @@ public class UpdateUser
         public long QueryId { get; set; }
     }
 
-    public class GetStudentHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
+    public class GetUserHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
     {
-        private readonly IUserService _studentService;
+        private readonly IUserService _userService;
 
-        public GetStudentHandler(IUserService studentService)
+        public GetUserHandler(IUserService userService)
         {
-            _studentService = studentService;
+            _userService = userService;
         }
 
         public async Task<UserModel> Handle(Request request, CancellationToken cancellationToken)
         {
             request.UserId = request.QueryId;
-            return await _studentService.UpdateUser(request, cancellationToken);
+            return await _userService.UpdateUser(request, cancellationToken);
         }
 
         public async Task<UserModel> Handle(

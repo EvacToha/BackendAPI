@@ -1,6 +1,7 @@
 ﻿
 using System.Reflection;
 using Autofac;
+using FluentValidation;
 using MediatR;
 using Module = Autofac.Module;
 
@@ -17,5 +18,10 @@ public class ApplicationModule : Module
         builder
             .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             .AsClosedTypesOf(typeof(IPipelineBehavior<,>));
+
+        builder
+            .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
+            .AsImplementedInterfaces();
     }
 }

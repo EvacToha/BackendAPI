@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using FluentValidation;
 using MediatR;
 using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Services;
@@ -16,10 +17,12 @@ public class AddUserRole
     public class AddUserRoleHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
     {
         private readonly IUserService _userService;
+        private readonly IValidator<Request> _validator;
 
-        public AddUserRoleHandler(IUserService userService)
+        public AddUserRoleHandler(IUserService userService, IValidator<Request> validator)
         {
             _userService = userService;
+            _validator = validator;
         }
         
         public async Task<UserModel> Handle(Request request, CancellationToken cancellationToken)
@@ -28,8 +31,12 @@ public class AddUserRole
             
         }
 
-        public async Task<UserModel> Handle(Request request, RequestHandlerDelegate<UserModel> next, CancellationToken cancellationToken)
+        public async Task<UserModel> Handle(
+            Request request, 
+            RequestHandlerDelegate<UserModel> next, 
+            CancellationToken cancellationToken)
         {
+            await _validator.ValidateAndThrowAsync(request, cancellationToken);
             return await next();
         }
     }

@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VebTech.Application.Requests;
+using VebTech.Application.Requests.ExceptionsHandling;
 using VebTech.Domain.Services;
 using VebTech.Infrastructure.Database;
 
@@ -48,6 +49,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.CustomSchemaIds(type => type.FullName!.Replace('+', '.'));
+});
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<HttpResponseExceptionFilter>();
 });
 
 var app = builder.Build();
