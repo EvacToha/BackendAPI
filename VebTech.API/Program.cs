@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VebTech.Application.Requests;
 using VebTech.Application.Requests.ExceptionsHandling;
+
 using VebTech.Domain.Services;
 using VebTech.Infrastructure.Database;
 
@@ -49,12 +50,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.CustomSchemaIds(type => type.FullName!.Replace('+', '.'));
+    
+    var basePath = AppContext.BaseDirectory;
+    var xmlPath = Path.Combine(basePath, "VebTech.API.xml");
+    options.IncludeXmlComments(xmlPath);
+    xmlPath = @"D:\AspNet\VebTech\VebTech.Domain.Models\bin\Debug\VebTech.Domain.Models.xml";
+    options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
 });
+
+builder.Services.AddControllers().AddJsonOptions(option =>
+    option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 var app = builder.Build();
 

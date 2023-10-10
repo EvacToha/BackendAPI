@@ -11,7 +11,7 @@ public class AddUserRole
     public class Request : IRequest<UserModel>
     {
         public long UserId;
-        public string RoleName;
+        public UserRole UserRole;
     }
 
     public class AddUserRoleHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
@@ -27,8 +27,7 @@ public class AddUserRole
         
         public async Task<UserModel> Handle(Request request, CancellationToken cancellationToken)
         {
-            return await _userService.AddRoleUser(request.UserId, request.RoleName, cancellationToken);
-            
+            return await _userService.AddRoleUser(request.UserId, request.UserRole, cancellationToken);
         }
 
         public async Task<UserModel> Handle(

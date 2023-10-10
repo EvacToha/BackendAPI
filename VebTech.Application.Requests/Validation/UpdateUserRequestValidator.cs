@@ -9,7 +9,7 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUser.Request>
 {
     public UpdateUserRequestValidator(IValidationUserService validationUserService)
     {
-        RuleFor(r => r.UserId)
+        RuleFor(r => r.QueryId)
             .NotEmpty()
             .WithMessage(ValidationMessages.NotEmptyValidator)
             .GreaterThan(ValidationConstants.IdMinimumValue)
@@ -23,9 +23,12 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUser.Request>
             .MaximumLength(ValidationConstants.StringMaximumLength)
             .WithMessage(ValidationMessages.MaximumLengthValidator)
             .EmailAddress()
-            .WithMessage(ValidationMessages.InvalidEmail)
+            .WithMessage(ValidationMessages.InvalidEmail);
+
+        RuleFor(r => r.Email)
             .MustAsync(validationUserService.IsEmailUnique)
-            .WithMessage(ValidationMessages.NotUniqueEntityValidator);
+            .WithMessage(ValidationMessages.NotUniqueEntityValidator)
+            .WhenAsync(async (r, token) => !await validationUserService.IsEmailBelongToUser(r.Email, r.QueryId, token));
 
         RuleFor(r => r.Name)
             .NotEmpty()

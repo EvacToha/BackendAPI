@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using VebTech.Domain.Models.Entities;
+using Property = VebTech.Domain.Models.Queries.Modifiers.Property;
 
 namespace VebTech.Domain.Models.Queries;
 
@@ -7,13 +8,13 @@ public class Sorting
 {
     public IEnumerable<SortingAction> SortingActions { get; set; }
 
-    public static Expression<Func<User, object>> GetSortProperty(string property)
+    public static Expression<Func<User, object>> GetSortProperty(Property property)
     {
-        return property.ToLower() switch
+        return property switch
         {
-            "name" => user => user.Name,
-            "age" => user => user.Age,
-            "email" => user => user.Email,
+            Property.Name => user => user.Name,
+            Property.Age => user => user.Age,
+            Property.Email => user => user.Email,
             _ => user => user.UserId,
         };
     }
@@ -21,6 +22,6 @@ public class Sorting
 
 public class SortingAction
 {
-    public string AttributeName { get; set; }
+    public Property Property { get; set; }
     public bool IsAscending { get; set; }
 }

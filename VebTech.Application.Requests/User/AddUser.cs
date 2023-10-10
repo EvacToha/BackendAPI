@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using FluentValidation;
 using MediatR;
+using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Services;
 using UserModel = VebTech.Domain.Models.Entities.User;
 
@@ -13,6 +14,8 @@ public class AddUser
     {
         [JsonIgnore]
         public long UserId { get; set; }
+        
+        public IEnumerable<UserRole> Roles { get; set; }
     }
 
     public class AddUserHandler : IRequestHandler<Request, UserModel>, IPipelineBehavior<Request, UserModel>
@@ -35,7 +38,7 @@ public class AddUser
                 Age = request.Age,
             };
 
-            return await _userService.AddUser(user, cancellationToken);
+            return await _userService.AddUser(user, request.Roles, cancellationToken);
         }
 
         public async Task<UserModel> Handle(

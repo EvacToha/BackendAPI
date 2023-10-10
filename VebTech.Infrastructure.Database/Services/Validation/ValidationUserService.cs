@@ -17,4 +17,11 @@ public class ValidationUserService : IValidationUserService
 
     public async Task<bool> IsExists(long userId, CancellationToken cancellationToken) =>
         await _dbContext.Users.AnyAsync(u => u.UserId == userId, cancellationToken);
+    
+    public async Task<bool> IsEmailBelongToUser(string email, long userId, CancellationToken cancellationToken)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(it => it.UserId == userId, cancellationToken);
+
+        return user != null && user.Email == email;
+    }
 }

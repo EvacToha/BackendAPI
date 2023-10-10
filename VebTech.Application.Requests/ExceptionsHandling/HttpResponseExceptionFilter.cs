@@ -7,7 +7,7 @@ namespace VebTech.Application.Requests.ExceptionsHandling;
 
 public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 {
-    public int Order => int.MaxValue;
+    public int Order => int.MaxValue - 10;
     
     public void OnActionExecuting(ActionExecutingContext context)
     {
@@ -17,6 +17,12 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
     {
         if (context.Exception is ValidationException validationException)
         {
+          
+            int? statusCode;
+            
+            //if(validationException.Errors.Any(failure => failure.ErrorCode == "404"))
+                
+                
             context.Result = new ObjectResult(validationException)
             {
                 StatusCode = StatusCodes.Status400BadRequest,

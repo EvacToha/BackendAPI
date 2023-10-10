@@ -16,7 +16,26 @@ public class UserController : BaseController
     {
         _mediator = mediator;
     }
-
+    
+    /// <summary>
+    /// Добавить пользователя
+    /// </summary>
+    /// <remarks>
+    /// Пример запроса:
+    ///
+    ///     POST /user
+    ///     {
+    ///        "name" : "Anton",
+    ///        "age" : 11,
+    ///        "email": "abc@mail.ru",
+    ///        "roles": [
+    ///            "User", "SuperAdmin", "Admin" 
+    ///        ]
+    ///     }
+    /// 
+    /// </remarks>
+    /// <param name="request">Пользователь</param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<User> AddUser([FromBody] AddUser.Request request, CancellationToken cancellationToken) =>
         await _mediator.Send(
@@ -24,22 +43,34 @@ public class UserController : BaseController
             { 
                 Email = request.Email, 
                 Name = request.Name, 
-                Age = request.Age 
+                Age = request.Age,
+                Roles = request.Roles
             }, cancellationToken);
     
+    
+    /// <summary>                                            
+    /// Добавить роль пользователю                              
+    /// </summary>                                           
+    /// <param name="userRole">Добавляемая роль</param>
+    /// <param name="userId">Айди пользователя</param> 
+    /// <returns></returns>                                  
     [HttpPost(RouteNames.Id)]
     public async Task<User> AddUserRole(
-        [FromQuery] string roleName,
+        [FromQuery] UserRole userRole,
         [FromRoute] long userId,
         CancellationToken cancellationToken) =>
         await _mediator.Send(
             new AddUserRole.Request 
             {  
                 UserId = userId,
-                RoleName = roleName,
+                UserRole = userRole,
             }, cancellationToken);
 
-    
+    /// <summary>                                            
+    /// Получить пользователя                              
+    /// </summary>                                           
+    /// <param name="userId">Айди пользователя</param> 
+    /// <returns></returns>   
     [HttpGet(RouteNames.Id)]
     public async Task<User> GetUser([FromRoute] long userId, CancellationToken cancellationToken) =>
         await _mediator.Send(
@@ -48,6 +79,55 @@ public class UserController : BaseController
                 UserId = userId
             }, cancellationToken);
     
+    
+
+
+    /// <summary>                                            
+    /// Получить всех пользователей                              
+    /// </summary>                                           
+    /// <param name="pageNumber">Номер страницы</param>
+    /// <param name="pageSize">Размер страницы</param> 
+    /// <param name="modifiers">Модификаторы запроса</param>
+    /// <remarks>
+    ///
+    /// Пример запроса:
+    ///
+    ///     POST /users
+    ///     {
+    ///       "sorting": {
+    ///         "sortingActions": [
+    ///           {
+    ///             "attributeName": "name",
+    ///             "isAscending": true
+    ///           },
+    ///           {
+    ///             "attributeName": "age",
+    ///             "isAscending": false
+    ///           }
+    ///         ]
+    ///       },
+    ///       "filter": {
+    ///         "nameFilter": {
+    ///           "filterMethod": 1,
+    ///           "filterValue": "Vasya"
+    ///         },
+    ///         "emailFilter": {
+    ///           "filterMethod": 1,
+    ///           "filterValue": "@mail.ru"
+    ///         },
+    ///         "ageFilter": {
+    ///           "filterMethod": 0,
+    ///           "filterValue": 18
+    ///         },
+    ///          "roleFilter": {
+    ///           "filterMethod": 0,
+    ///           "filterValue": "admin"
+    ///         }
+    ///       }
+    ///     }
+    /// 
+    /// </remarks>
+    /// <returns></returns>  
     [HttpPost("/api/users")]
     public async Task<PaginatedList<User>> GetUsers(
         [FromQuery] int pageNumber,
@@ -62,17 +142,43 @@ public class UserController : BaseController
                 Modifiers = modifiers
             }, cancellationToken);
 
+    /// <summary>                                            
+    /// Обновить пользователя                              
+    /// </summary>                                           
+    /// <param name="userId">Айди пользователя</param>
+    /// <param name="request">Новый пользователь</param>
+    /// <remarks>
+    /// Пример запроса:
+    ///
+    ///     POST /user/1
+    ///     {
+    ///        "name" : "Anton",
+    ///        "age" : 11,
+    ///        "email": "abc@mail.ru",
+    ///        "roles": [
+    ///            "User", "SuperAdmin", "Admin" 
+    ///        ]
+    ///     }
+    /// 
+    /// </remarks>
+    /// <returns></returns>  
     [HttpPut(RouteNames.Id)]
-    public async Task<User> UpdateUser([FromRoute] long userId, UpdateUser.Request request, CancellationToken cancellationToken) =>
+    public async Task<User> UpdateUser([FromRoute] long userId, [FromBody] UpdateUser.Request request, CancellationToken cancellationToken) =>
         await _mediator.Send(
             new UpdateUser.Request
             {  
                 QueryId = userId,
                 Age = request.Age,
                 Email = request.Email,
+                Name = request.Name,
                 Roles = request.Roles
             }, cancellationToken);
 
+    /// <summary>                                            
+    /// Удалить пользователя                              
+    /// </summary>                                           
+    /// <param name="userId">Айди пользователя</param>
+    /// <returns></returns>  
     [HttpDelete(RouteNames.Id)]
     public async Task<int> RemoveUser([FromRoute] long userId, CancellationToken cancellationToken) =>
         await _mediator.Send(

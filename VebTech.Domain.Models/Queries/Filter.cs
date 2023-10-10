@@ -1,99 +1,94 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VebTech.Domain.Models.Entities;
+using Property = VebTech.Domain.Models.Queries.Modifiers.Property;
 
 namespace VebTech.Domain.Models.Queries;
 
 
 
+/// <summary>
+/// Фильтр
+/// </summary>
 public class Filter
 {
-    public StringFilter? NameFilter { get; set; }
-    public StringFilter? EmailFilter { get; set; }
-    public IntegerFilter? AgeFilter { get; set; }
-    public StringFilter? RoleFilter { get; set; }
+    public IEnumerable<FilterAction> FilterActions { get; set; }
 }
 
-public class BaseFilter
+public class FilterAction
 {
-    public enum StringMethod 
+    public enum FilterMethod 
     {
-        Start = -1,
-        Equals = 0,
-        End = 1,
-        Contains = 2,
+        Start,
+        End,
+        Contains,
+        Equals,
+        Less,
+        More
     }
     
-    public enum IntegerMethod 
-    {
-        Less = -1,
-        Equals = 0,
-        More = 1
-    }
+    public Property Property { get; set; }
+
+    public string FilterValue {get; set; }
+    
+    public FilterMethod Method {get; set; }
 }
 
-public class StringFilter : BaseFilter
-{
-    public StringMethod FilterMethod { get; set; }
-    public string FilterValue { get; set; }
-}
 
-public class IntegerFilter : BaseFilter
-{
-    public IntegerMethod FilterMethod { get; set; }
-    public long FilterValue { get; set; }
-}
 
 public static class FilterQuery
 {
-    public static IQueryable<User> FilterByName(this IQueryable<User> query, StringFilter stringFilter)
+    public static IQueryable<User> FilterByName(this IQueryable<User> query, FilterAction filterAction)
     {
-        return stringFilter.FilterMethod switch
+        return filterAction.Method switch
         {
-            BaseFilter.StringMethod.Start => query.Where(u => u.Name.StartsWith(stringFilter.FilterValue)),
-            BaseFilter.StringMethod.End => query.Where(u => u.Name.EndsWith(stringFilter.FilterValue)),
-            BaseFilter.StringMethod.Equals => query.Where(u => u.Name == stringFilter.FilterValue),
-            BaseFilter.StringMethod.Contains => query.Where(u => u.Name.Contains(stringFilter.FilterValue)),
-            _ => query.Where(u => u.Name == stringFilter.FilterValue)
+            FilterAction.FilterMethod.Start => query.Where(u => u.Name.StartsWith(filterAction.FilterValue)),
+            FilterAction.FilterMethod.End => query.Where(u => u.Name.EndsWith(filterAction.FilterValue)),
+            FilterAction.FilterMethod.Equals => query.Where(u => u.Name == filterAction.FilterValue),
+            FilterAction.FilterMethod.Contains => query.Where(u => u.Name.Contains(filterAction.FilterValue)),
+            _ => query.Where(u => u.Name == filterAction.FilterValue)
         };
     }
     
-    public static IQueryable<User> FilterByEmail(this IQueryable<User> query, StringFilter stringFilter)
+    public static IQueryable<User> FilterByEmail(this IQueryable<User> query, FilterAction filterAction)
     {
-        return stringFilter.FilterMethod switch
+        return filterAction.Method switch
         {
-            BaseFilter.StringMethod.Start => query.Where(u => u.Email.StartsWith(stringFilter.FilterValue)),
-            BaseFilter.StringMethod.End => query.Where(u => u.Email.EndsWith(stringFilter.FilterValue)),
-            BaseFilter.StringMethod.Equals => query.Where(u => u.Email == stringFilter.FilterValue),
-            BaseFilter.StringMethod.Contains => query.Where(u => u.Email.Contains(stringFilter.FilterValue)),
-            _ => query.Where(u => u.Email == stringFilter.FilterValue)
+            FilterAction.FilterMethod.Start => query.Where(u => u.Email.StartsWith(filterAction.FilterValue)),
+            FilterAction.FilterMethod.End => query.Where(u => u.Email.EndsWith(filterAction.FilterValue)),
+            FilterAction.FilterMethod.Equals => query.Where(u => u.Email == filterAction.FilterValue),
+            FilterAction.FilterMethod.Contains => query.Where(u => u.Email.Contains(filterAction.FilterValue)),
+            _ => query.Where(u => u.Email == filterAction.FilterValue)
         };
     }
     
-    public static IQueryable<User> FilterByAge(this IQueryable<User> query, IntegerFilter integerFilter)
+    public static IQueryable<User> FilterByAge(this IQueryable<User> query, FilterAction filterAction)
     {
-        return integerFilter.FilterMethod switch
+        var filterValue = int.Parse(filterAction.FilterValue);
+        return filterAction.Method switch
         {
-            BaseFilter.IntegerMethod.Less => query.Where(u => u.Age < integerFilter.FilterValue),
-            BaseFilter.IntegerMethod.More => query.Where(u => u.Age > integerFilter.FilterValue),
-            BaseFilter.IntegerMethod.Equals => query.Where(u => u.Age == integerFilter.FilterValue),
-            _ => query.Where(u => u.Age == integerFilter.FilterValue)
+            FilterAction.FilterMethod.Less => query.Where(u => u.Age < filterValue),
+            FilterAction.FilterMethod.More => query.Where(u => u.Age > filterValue),
+            FilterAction.FilterMethod.Equals => query.Where(u => u.Age == filterValue),
+            _ => query.Where(u => u.Age == filterValue)
         };
     }
     
-    public static IQueryable<User> FilterByRole(this IQueryable<User> query, StringFilter stringFilter)
+    public static IQueryable<User> FilterByRole(this IQueryable<User> query, FilterAction filterAction)
     {
-        return stringFilter.FilterMethod switch
+        return filterAction.Method switch
         {
-            BaseFilter.StringMethod.Start => query.Include(u => u.Roles)
-                .Where(u => u.Roles.Any(r => r.Name.StartsWith(stringFilter.FilterValue))),
-            BaseFilter.StringMethod.End => query.Include(u => u.Roles)
-                .Where(u => u.Roles.Any(r => r.Name.EndsWith(stringFilter.FilterValue))),
-            BaseFilter.StringMethod.Equals => query.Include(u => u.Roles)
-                .Where(u => u.Roles.Any(r => r.Name == stringFilter.FilterValue)),
-            BaseFilter.StringMethod.Contains => query.Include(u => u.Roles)
-                .Where(u => u.Roles.Any(r => r.Name.Contains(stringFilter.FilterValue))),
+            FilterAction.FilterMethod.Start => query.Include(u => u.Roles)
+                .Where(u => u.Roles.Any(r => r.UserRole.ToString().StartsWith(filterAction.FilterValue))),
+            FilterAction.FilterMethod.End => query.Include(u => u.Roles)
+                .Where(u => u.Roles.Any(r => r.UserRole.ToString().EndsWith(filterAction.FilterValue))),
+            FilterAction.FilterMethod.Equals => query.Include(u => u.Roles)
+                .Where(u => u.Roles.Any(r => r.UserRole.ToString() == filterAction.FilterValue)),
+            FilterAction.FilterMethod.Contains => query.Include(u => u.Roles)
+                .Where(u => u.Roles.Any(r => r.UserRole.ToString().Contains(filterAction.FilterValue))),
             _ => query.Include(u => u.Roles)
-                .Where(u => u.Roles.Any(r => r.Name == stringFilter.FilterValue))
+                .Where(u => u.Roles.Any(r => r.UserRole.ToString() == filterAction.FilterValue))
         };
     }
     

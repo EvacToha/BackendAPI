@@ -32,34 +32,29 @@ public class GetUsers
         {
             var query = _userService.GetUsers();
 
-            if (request.Modifiers.Filter.NameFilter != null)
-                query = query.FilterByName(request.Modifiers.Filter.NameFilter);
-
-            if (request.Modifiers.Filter.AgeFilter != null)
-                query = query.FilterByAge(request.Modifiers.Filter.AgeFilter);
-            
-            if (request.Modifiers.Filter.EmailFilter != null)
+            //применяем все фильтры
+            if (request.Modifiers.Filter != null)
             {
-                query = query.FilterByEmail(request.Modifiers.Filter.EmailFilter);
-            }
-            if (request.Modifiers.Filter.RoleFilter != null)
-            {
-                query = query.FilterByRole(request.Modifiers.Filter.RoleFilter);
+                query = request.Modifiers.Filter.FilterActions.Aggregate(query, (current, sortingAction) => sortingAction.Property switch
+                {
+                    Modifiers.Property.Name => current.FilterByName(sortingAction),
+                    Modifiers.Property.Age => current.FilterByAge(sortingAction),
+                    Modifiers.Property.Email => current.FilterByEmail(sortingAction),
+                    Modifiers.Property.UserRole => current.FilterByRole(sortingAction),
+                    _ => current
+                });
             }
 
-            foreach (var sortingAction in request.Modifiers.Sorting.SortingActions)
+            //применяем все сортировки
+            if (request.Modifiers.Sorting != null)
             {
-                if (sortingAction.IsAscending)
+                query = request.Modifiers.Sorting.SortingActions.Aggregate(query, (current, sortingAction) => sortingAction.IsAscending switch
                 {
-                    query = query.OrderBy(Sorting.GetSortProperty(sortingAction.AttributeName));
-                }
-                else
-                {
-                    query = query.OrderByDescending(Sorting.GetSortProperty(sortingAction.AttributeName));
-                }
+                    true => current.OrderBy(Sorting.GetSortProperty(sortingAction.Property)),
+                    _ => current.OrderByDescending(Sorting.GetSortProperty(sortingAction.Property))
+                });
             }
-            
-            
+
             var totalCount = query.Count();
             
             if (request.PageNumber != default && request.PageSize != default)
