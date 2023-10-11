@@ -9,15 +9,25 @@ namespace VebTech.Domain.Models.Queries;
 
 
 /// <summary>
-/// Фильтр
+/// Оболочка для фильтров
 /// </summary>
 public class Filter
 {
+    /// <summary>
+    /// Массив фильтров
+    /// </summary>
     public IEnumerable<FilterAction> FilterActions { get; set; }
 }
 
+/// <summary>
+/// Фильтрующее действие
+/// </summary>
 public class FilterAction
 {
+    /// <summary>
+    /// Перечисление фильтрующих методов
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum FilterMethod 
     {
         Start,
@@ -30,15 +40,27 @@ public class FilterAction
     
     public Property Property { get; set; }
 
+    /// <summary>
+    /// Фильтрующее значение
+    /// </summary>
     public string FilterValue {get; set; }
-    
+
     public FilterMethod Method {get; set; }
 }
 
 
 
+/// <summary>
+/// Реализация фильтров
+/// </summary>
 public static class FilterQuery
 {
+    /// <summary>
+    /// Фильтрация по имени
+    /// </summary>
+    /// <param name="query">Запрос из базы данных</param>
+    /// <param name="filterAction"> Фильтрующее действие</param>
+    /// <returns></returns>
     public static IQueryable<User> FilterByName(this IQueryable<User> query, FilterAction filterAction)
     {
         return filterAction.Method switch
@@ -51,6 +73,12 @@ public static class FilterQuery
         };
     }
     
+    /// <summary>
+    /// Фильтрация по возрасту
+    /// </summary>
+    /// <param name="query">Запрос из базы данных</param>
+    /// <param name="filterAction"> Фильтрующее действие</param>
+    /// <returns></returns>
     public static IQueryable<User> FilterByEmail(this IQueryable<User> query, FilterAction filterAction)
     {
         return filterAction.Method switch
@@ -63,6 +91,12 @@ public static class FilterQuery
         };
     }
     
+    /// <summary>
+    /// Фильтрация по возрасту
+    /// </summary>
+    /// <param name="query">Запрос из базы данных</param>
+    /// <param name="filterAction"> Фильтрующее действие</param>
+    /// <returns></returns>
     public static IQueryable<User> FilterByAge(this IQueryable<User> query, FilterAction filterAction)
     {
         var filterValue = int.Parse(filterAction.FilterValue);
@@ -75,6 +109,12 @@ public static class FilterQuery
         };
     }
     
+    /// <summary>
+    /// Фильтрация по роли
+    /// </summary>
+    /// <param name="query">Запрос из базы данных</param>
+    /// <param name="filterAction"> Фильтрующее действие</param>
+    /// <returns></returns>
     public static IQueryable<User> FilterByRole(this IQueryable<User> query, FilterAction filterAction)
     {
         return filterAction.Method switch

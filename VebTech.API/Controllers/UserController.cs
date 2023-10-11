@@ -1,9 +1,12 @@
-﻿using MediatR;
+﻿using System.Net;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using VebTech.API.Controllers.Constants;
 using VebTech.Application.Requests.User;
 using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Models.Queries;
+using VebTech.Domain.Models.Responses;
 using VebTech.Infrastructure.Database;
 
 namespace VebTech.API.Controllers;
@@ -36,6 +39,9 @@ public class UserController : BaseController
     /// </remarks>
     /// <param name="request">Пользователь</param>
     /// <returns></returns>
+    /// 
+    [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<User> AddUser([FromBody] AddUser.Request request, CancellationToken cancellationToken) =>
         await _mediator.Send(
@@ -53,7 +59,11 @@ public class UserController : BaseController
     /// </summary>                                           
     /// <param name="userRole">Добавляемая роль</param>
     /// <param name="userId">Айди пользователя</param> 
-    /// <returns></returns>                                  
+    /// <returns></returns>
+    
+    [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
     [HttpPost(RouteNames.Id)]
     public async Task<User> AddUserRole(
         [FromQuery] UserRole userRole,
@@ -70,7 +80,11 @@ public class UserController : BaseController
     /// Получить пользователя                              
     /// </summary>                                           
     /// <param name="userId">Айди пользователя</param> 
-    /// <returns></returns>   
+    /// <returns></returns>
+    
+    [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
     [HttpGet(RouteNames.Id)]
     public async Task<User> GetUser([FromRoute] long userId, CancellationToken cancellationToken) =>
         await _mediator.Send(
@@ -97,37 +111,28 @@ public class UserController : BaseController
     ///       "sorting": {
     ///         "sortingActions": [
     ///           {
-    ///             "attributeName": "name",
+    ///             "property": "name",
     ///             "isAscending": true
-    ///           },
-    ///           {
-    ///             "attributeName": "age",
-    ///             "isAscending": false
     ///           }
     ///         ]
     ///       },
     ///       "filter": {
-    ///         "nameFilter": {
-    ///           "filterMethod": 1,
-    ///           "filterValue": "Vasya"
-    ///         },
-    ///         "emailFilter": {
-    ///           "filterMethod": 1,
-    ///           "filterValue": "@mail.ru"
-    ///         },
-    ///         "ageFilter": {
-    ///           "filterMethod": 0,
-    ///           "filterValue": 18
-    ///         },
-    ///          "roleFilter": {
-    ///           "filterMethod": 0,
-    ///           "filterValue": "admin"
-    ///         }
+    ///         "filterActions": [
+    ///             {
+    ///             "property": "Name",
+    ///             "filterValue": "string",
+    ///             "method": "Start"
+    ///             }
+    ///         ]
     ///       }
     ///     }
     /// 
     /// </remarks>
-    /// <returns></returns>  
+    /// <returns></returns>
+    
+    
+    [ProducesResponseType(typeof(PaginatedList<User>),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [HttpPost("/api/users")]
     public async Task<PaginatedList<User>> GetUsers(
         [FromQuery] int pageNumber,
@@ -161,7 +166,11 @@ public class UserController : BaseController
     ///     }
     /// 
     /// </remarks>
-    /// <returns></returns>  
+    /// <returns></returns>
+    
+    [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
     [HttpPut(RouteNames.Id)]
     public async Task<User> UpdateUser([FromRoute] long userId, [FromBody] UpdateUser.Request request, CancellationToken cancellationToken) =>
         await _mediator.Send(
@@ -178,7 +187,11 @@ public class UserController : BaseController
     /// Удалить пользователя                              
     /// </summary>                                           
     /// <param name="userId">Айди пользователя</param>
-    /// <returns></returns>  
+    /// <returns></returns>
+    
+    [ProducesResponseType(typeof(int),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
     [HttpDelete(RouteNames.Id)]
     public async Task<int> RemoveUser([FromRoute] long userId, CancellationToken cancellationToken) =>
         await _mediator.Send(

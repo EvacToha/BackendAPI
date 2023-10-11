@@ -12,23 +12,31 @@ public class AddUserRequestValidator : AbstractValidator<AddUser.Request>
         RuleFor(r => r.Email)
             .NotEmpty()
             .WithMessage(ValidationMessages.NotEmptyValidator)
+            .WithErrorCode("400")
             .MaximumLength(ValidationConstants.StringMaximumLength)
             .WithMessage(ValidationMessages.MaximumLengthValidator)
+            .WithErrorCode("400")
             .EmailAddress()
             .WithMessage(ValidationMessages.InvalidEmail)
+            .WithErrorCode("400")
             .MustAsync(validationUserService.IsEmailUnique)
-            .WithMessage(ValidationMessages.NotUniqueEntityValidator);
+            .WithMessage(ValidationMessages.NotUniqueEntityValidator)
+            .WithErrorCode("400");
 
         RuleFor(r => r.Name)
             .NotEmpty()
             .WithMessage(ValidationMessages.NotEmptyValidator)
+            .WithErrorCode("400")
             .MaximumLength(ValidationConstants.StringMaximumLength)
-            .WithMessage(ValidationMessages.MaximumLengthValidator);
+            .WithMessage(ValidationMessages.MaximumLengthValidator)
+            .WithErrorCode("400");
         
         RuleFor(r => r.Age)
             .NotEmpty()
             .WithMessage(ValidationMessages.NotEmptyValidator)
+            .WithErrorCode("400")
             .GreaterThan(ValidationConstants.AgeMinimumValue)
-            .WithMessage(ValidationMessages.IncorrectAgeValidator);
+            .WithMessage(ValidationMessages.IncorrectAgeValidator)
+            .WithErrorCode("400");
     }
 }

@@ -2,10 +2,13 @@
 
 namespace VebTech.Domain.Models.Queries;
 
+/// <summary>
+/// Модификатор запроса
+/// </summary>
 public class Modifiers
 {
     /// <summary>
-    /// Название свойства
+    /// Перечисление названий свойств
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum Property
@@ -15,6 +18,7 @@ public class Modifiers
         Age,
         UserRole
     }
+   
     public Sorting? Sorting { get; set; }
     public Filter? Filter { get; set; }
 }

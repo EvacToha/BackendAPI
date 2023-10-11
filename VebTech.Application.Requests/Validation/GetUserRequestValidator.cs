@@ -12,9 +12,12 @@ public class GetUserRequestValidator : AbstractValidator<GetUser.Request>
         RuleFor(r => r.UserId)
             .NotEmpty()
             .WithMessage(ValidationMessages.NotEmptyValidator)
+            .WithErrorCode("400")
             .GreaterThan(ValidationConstants.IdMinimumValue)
             .WithMessage(ValidationMessages.IncorrectIdValidator)
+            .WithErrorCode("400")
             .MustAsync(validationUserService.IsExists)
-            .WithMessage(ValidationMessages.EntityDoesNotExistValidator);
+            .WithMessage(ValidationMessages.EntityDoesNotExistValidator)
+            .WithErrorCode("404");
     }
 }

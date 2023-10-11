@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using VebTech.Domain.Models.Queries;
 using VebTech.Domain.Services;
@@ -22,11 +23,12 @@ public class GetUsers
         IPipelineBehavior<Request, PaginatedList<UserModel>>
     {
         private readonly IUserService _userService;
-        
-        
-        public GetUsersHandler(IUserService userService)
+        private readonly IValidator<Request> _validator;
+
+        public GetUsersHandler(IUserService userService, IValidator<Request> validator)
         {
             _userService = userService;
+            _validator = validator;
         }
         public async Task<PaginatedList<UserModel>> Handle(Request request, CancellationToken cancellationToken)
         {
@@ -77,6 +79,7 @@ public class GetUsers
             RequestHandlerDelegate<PaginatedList<UserModel>> next, 
             CancellationToken cancellationToken)
         {
+            await _validator.ValidateAndThrowAsync(request, cancellationToken);
             return await next();
         }
     }

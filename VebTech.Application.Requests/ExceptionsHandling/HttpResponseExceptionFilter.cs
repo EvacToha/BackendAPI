@@ -17,15 +17,17 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
     {
         if (context.Exception is ValidationException validationException)
         {
-          
-            int? statusCode;
-            
-            //if(validationException.Errors.Any(failure => failure.ErrorCode == "404"))
+            int? statusCode = 200;
+
+            if (validationException.Errors.Any(failure => failure.ErrorCode == "404"))
+                statusCode = 404;
+            else if (validationException.Errors.Any(failure => failure.ErrorCode == "400"))
+                statusCode = 400;
                 
                 
             context.Result = new ObjectResult(validationException)
             {
-                StatusCode = StatusCodes.Status400BadRequest,
+                StatusCode = statusCode,
                 Value = validationException.Errors,
             };
 

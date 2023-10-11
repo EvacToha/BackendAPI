@@ -3,7 +3,7 @@
 namespace VebTech.Domain.Models.Entities;
 
 /// <summary>
-/// Доступные роли
+/// Перечисление доступных ролей
 /// </summary>
 public enum UserRole {
     User,
