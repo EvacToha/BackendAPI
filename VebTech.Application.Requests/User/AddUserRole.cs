@@ -26,7 +26,7 @@ public class AddUserRole
         
         public async Task<UserModel> Handle(Request request, CancellationToken cancellationToken)
         {
-            return await _userService.AddRoleUser(request.UserId, request.UserRole, cancellationToken);
+            return await _userService.AddUserRole(request.UserId, request.UserRole, cancellationToken);
         }
 
         public async Task<UserModel> Handle(

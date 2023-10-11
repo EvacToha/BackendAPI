@@ -31,7 +31,7 @@ public class GetUsers
         }
         public async Task<PaginatedList<UserModel>> Handle(Request request, CancellationToken cancellationToken)
         {
-            var query = _userService.GetUsers();
+            var query = _userService.GetUsersAsQueryable();
 
             //Apply all filters
             if (request.Modifiers.Filter != null)

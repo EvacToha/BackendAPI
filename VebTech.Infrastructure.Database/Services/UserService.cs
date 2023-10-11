@@ -25,7 +25,7 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<User> AddRoleUser(long userId, UserRole userRole, CancellationToken cancellationToken)
+    public async Task<User> AddUserRole(long userId, UserRole userRole, CancellationToken cancellationToken)
     {
         var role = await _dbContext.Roles.FirstAsync(r => r.UserRole == userRole, cancellationToken);
         var user = await _dbContext.Users.Include(u => u.Roles).FirstAsync(u => u.UserId == userId, cancellationToken);
@@ -39,7 +39,7 @@ public class UserService : IUserService
     public async Task<User> GetUserById(long userId, CancellationToken cancellationToken) =>
         await _dbContext.Users.Include(u => u.Roles).FirstAsync(u => u.UserId == userId, cancellationToken);
     
-    public IQueryable<User> GetUsers() => 
+    public IQueryable<User> GetUsersAsQueryable() => 
         _dbContext.Users.AsQueryable();
     
     public async Task<User> UpdateUser(User user, IEnumerable<UserRole> roles, CancellationToken cancellationToken)

@@ -35,7 +35,6 @@ builder.Services.AddControllers()
             {
                 ContentTypes =
                 {
-                    // using static System.Net.Mime.MediaTypeNames;
                     MediaTypeNames.Application.Json,
                     MediaTypeNames.Application.Xml
                 }
