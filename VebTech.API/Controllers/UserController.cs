@@ -1,21 +1,18 @@
-﻿using System.Net;
-using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using VebTech.API.Controllers.Constants;
 using VebTech.Application.Requests.User;
 using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Models.Queries;
 using VebTech.Domain.Models.Responses;
-using VebTech.Infrastructure.Database;
 
 namespace VebTech.API.Controllers;
 
 public class UserController : BaseController
 {
     private readonly IMediator _mediator;
-
-    public UserController(IMediator mediator, DatabaseContext dbContext)
+    
+    public UserController(IMediator mediator)
     {
         _mediator = mediator;
     }
@@ -39,7 +36,6 @@ public class UserController : BaseController
     /// </remarks>
     /// <param name="request">Пользователь</param>
     /// <returns></returns>
-    /// 
     [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -53,14 +49,12 @@ public class UserController : BaseController
                 Roles = request.Roles
             }, cancellationToken);
     
-    
     /// <summary>                                            
     /// Добавить роль пользователю                              
     /// </summary>                                           
     /// <param name="userRole">Добавляемая роль</param>
     /// <param name="userId">Айди пользователя</param> 
     /// <returns></returns>
-    
     [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
@@ -81,7 +75,6 @@ public class UserController : BaseController
     /// </summary>                                           
     /// <param name="userId">Айди пользователя</param> 
     /// <returns></returns>
-    
     [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
@@ -93,9 +86,6 @@ public class UserController : BaseController
                 UserId = userId
             }, cancellationToken);
     
-    
-
-
     /// <summary>                                            
     /// Получить всех пользователей                              
     /// </summary>                                           
@@ -129,8 +119,6 @@ public class UserController : BaseController
     /// 
     /// </remarks>
     /// <returns></returns>
-    
-    
     [ProducesResponseType(typeof(PaginatedList<User>),StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [HttpPost("/api/users")]
@@ -167,7 +155,6 @@ public class UserController : BaseController
     /// 
     /// </remarks>
     /// <returns></returns>
-    
     [ProducesResponseType(typeof(User),StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
@@ -188,12 +175,11 @@ public class UserController : BaseController
     /// </summary>                                           
     /// <param name="userId">Айди пользователя</param>
     /// <returns></returns>
-    
-    [ProducesResponseType(typeof(int),StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status404NotFound)]
     [HttpDelete(RouteNames.Id)]
-    public async Task<int> RemoveUser([FromRoute] long userId, CancellationToken cancellationToken) =>
+    public async Task RemoveUser([FromRoute] long userId, CancellationToken cancellationToken) =>
         await _mediator.Send(
             new RemoveUser.Request 
             { 

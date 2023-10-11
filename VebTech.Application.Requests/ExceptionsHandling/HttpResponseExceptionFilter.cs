@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -8,7 +7,7 @@ namespace VebTech.Application.Requests.ExceptionsHandling;
 public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
 {
     public int Order => int.MaxValue - 10;
-    
+
     public void OnActionExecuting(ActionExecutingContext context)
     {
     }
@@ -23,8 +22,8 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
                 statusCode = 404;
             else if (validationException.Errors.Any(failure => failure.ErrorCode == "400"))
                 statusCode = 400;
-                
-                
+
+
             context.Result = new ObjectResult(validationException)
             {
                 StatusCode = statusCode,
@@ -43,6 +42,4 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
             context.ExceptionHandled = true;
         }
     }
-
-    
 }

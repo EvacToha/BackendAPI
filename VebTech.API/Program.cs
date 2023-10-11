@@ -5,15 +5,12 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using VebTech.Application.Requests;
 using VebTech.Application.Requests.ExceptionsHandling;
-
 using VebTech.Domain.Services;
 using VebTech.Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddCors();
 
@@ -28,6 +25,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder => 
     containerBuilder.RegisterModule(new DomainModule()));
 
+// Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions( op => op.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
     .ConfigureApiBehaviorOptions(options =>
@@ -43,9 +41,11 @@ builder.Services.AddControllers()
                 }
             };
     })
-    .AddXmlSerializerFormatters();;
+    .AddXmlSerializerFormatters();
+
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
+// Add services for documentation using Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -58,6 +58,7 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+// Add a filter for error handling requests at the middleware level
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
@@ -68,16 +69,14 @@ builder.Services.AddControllers().AddJsonOptions(option =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 app.UseCors(corsPolicyBuilder => corsPolicyBuilder
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());
 
+// Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
 
 app.UseHttpsRedirection();
 

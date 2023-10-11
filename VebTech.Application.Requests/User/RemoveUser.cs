@@ -1,5 +1,4 @@
-﻿
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using VebTech.Domain.Services;
 
@@ -7,12 +6,12 @@ namespace VebTech.Application.Requests.User;
 
 public class RemoveUser
 {
-    public class Request : IRequest<int>
+    public class Request : IRequest
     {
         public long UserId { get; set; }
     }
 
-    public class RemoveUserHandler : IRequestHandler<Request, int>, IPipelineBehavior<Request, int>
+    public class RemoveUserHandler : IRequestHandler<Request, Unit>, IPipelineBehavior<Request,Unit>
     {
         private readonly IUserService _userService;
         private readonly IValidator<Request> _validator;
@@ -23,15 +22,15 @@ public class RemoveUser
             _validator = validator;
         }
 
-        public async Task<int> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(Request request, CancellationToken cancellationToken)
         {
-            var result = await _userService.RemoveUserById(request.UserId, cancellationToken);
-            return result;
+            await _userService.RemoveUserById(request.UserId, cancellationToken);
+            return default;
         }
 
-        public async Task<int> Handle(
+        public async Task<Unit> Handle(
             Request request,
-            RequestHandlerDelegate<int> next,
+            RequestHandlerDelegate<Unit> next,
             CancellationToken cancellationToken)
         {
             await _validator.ValidateAndThrowAsync(request, cancellationToken);

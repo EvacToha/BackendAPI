@@ -5,7 +5,6 @@ using VebTech.Domain.Models.Queries;
 using VebTech.Domain.Services;
 using UserModel = VebTech.Domain.Models.Entities.User;
 
-
 namespace VebTech.Application.Requests.User;
 
 public class GetUsers 
@@ -34,7 +33,7 @@ public class GetUsers
         {
             var query = _userService.GetUsers();
 
-            //применяем все фильтры
+            //Apply all filters
             if (request.Modifiers.Filter != null)
             {
                 query = request.Modifiers.Filter.FilterActions.Aggregate(query, (current, sortingAction) => sortingAction.Property switch
@@ -47,7 +46,7 @@ public class GetUsers
                 });
             }
 
-            //применяем все сортировки
+            //Apply all sortings
             if (request.Modifiers.Sorting != null)
             {
                 query = request.Modifiers.Sorting.SortingActions.Aggregate(query, (current, sortingAction) => sortingAction.IsAscending switch
@@ -83,6 +82,5 @@ public class GetUsers
             return await next();
         }
     }
-    
 }
 

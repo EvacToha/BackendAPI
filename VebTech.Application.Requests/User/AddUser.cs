@@ -7,7 +7,6 @@ using UserModel = VebTech.Domain.Models.Entities.User;
 
 namespace VebTech.Application.Requests.User;
 
-
 public class AddUser
 {
     public class Request : UserModel, IRequest<UserModel>

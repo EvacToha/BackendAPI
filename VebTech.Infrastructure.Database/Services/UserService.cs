@@ -16,8 +16,8 @@ public class UserService : IUserService
     {
         foreach (var role in roles)
         {
-            var entity = await _dbContext.Roles.FirstOrDefaultAsync(r => r.UserRole == role, cancellationToken);
-            user.Roles.Add(entity!);
+            var entity = await _dbContext.Roles.FirstAsync(r => r.UserRole == role, cancellationToken);
+            user.Roles.Add(entity);
         }
         await _dbContext.AddAsync(user, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -27,27 +27,21 @@ public class UserService : IUserService
 
     public async Task<User> AddRoleUser(long userId, UserRole userRole, CancellationToken cancellationToken)
     {
-        var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.UserRole == userRole, cancellationToken);
-
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId, cancellationToken);
+        var role = await _dbContext.Roles.FirstAsync(r => r.UserRole == userRole, cancellationToken);
+        var user = await _dbContext.Users.Include(u => u.Roles).FirstAsync(u => u.UserId == userId, cancellationToken);
         
-        user!.Roles.Add(role!);
+        user.Roles.Add(role);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return user;
     }
     
-
-    public async Task<User?> GetUserById(long userId, CancellationToken cancellationToken) =>
-        await _dbContext.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.UserId == userId, cancellationToken);
+    public async Task<User> GetUserById(long userId, CancellationToken cancellationToken) =>
+        await _dbContext.Users.Include(u => u.Roles).FirstAsync(u => u.UserId == userId, cancellationToken);
     
-
-
     public IQueryable<User> GetUsers() => 
         _dbContext.Users.AsQueryable();
     
-
-
     public async Task<User> UpdateUser(User user, IEnumerable<UserRole> roles, CancellationToken cancellationToken)
     {
         var entity = await _dbContext.Users.Include(u => u.Roles).FirstAsync(it => it.UserId == user.UserId, cancellationToken);
@@ -55,18 +49,15 @@ public class UserService : IUserService
         entity.Email = user.Email;
         entity.Name = user.Name;
         entity.Age = user.Age;
-
         entity.Roles = new List<Role>();
-        await _dbContext.SaveChangesAsync(cancellationToken);
         
         var rolesList = roles.ToList();
         if (rolesList.Any())
         {
-            entity.Roles = new List<Role>();
             foreach (var role in rolesList)
             {
                 var entityRole = await _dbContext.Roles.FirstAsync(r => r.UserRole == role, cancellationToken);
-                entity.Roles.Add(entityRole!);
+                entity.Roles.Add(entityRole);
             }
         }
 
@@ -74,9 +65,9 @@ public class UserService : IUserService
         return entity;
     }
 
-    public async Task<int> RemoveUserById(long userId, CancellationToken cancellationToken)
+    public async Task RemoveUserById(long userId, CancellationToken cancellationToken)
     {
         _dbContext.Users.Remove(new User { UserId = userId });
-        return await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

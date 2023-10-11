@@ -6,7 +6,9 @@ public static class ValidationMessages
     
     public const string IncorrectFilterMethodValidator = "Атрибут не поддерживает указаный фильтр.";
     
-    public const string NotUniqueEntityValidator = "Пользователь с таким Email уже существует..";
+    public const string NotUniqueEntityValidator = "Пользователь с таким Email уже существует.";
+    
+    public const string NotUniqueRoleValidator = "Пользователь уже обладает данной ролью.";
     
     public const string EntityDoesNotExistValidator = "Пользователя не существует.";
 

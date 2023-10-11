@@ -19,5 +19,10 @@ public class AddUserRoleRequestValidator : AbstractValidator<AddUserRole.Request
             .MustAsync(validationUserService.IsExists)
             .WithMessage(ValidationMessages.EntityDoesNotExistValidator)
             .WithErrorCode("404");
+        
+        RuleFor(r => r)
+            .MustAsync(async (r, token) => await validationUserService.IsRoleBelongToUser(r.UserRole, r.UserId, token))
+            .WithMessage(ValidationMessages.NotUniqueRoleValidator)
+            .WithErrorCode("400");
     }
 }

@@ -11,7 +11,7 @@ public class GetUsersRequestValidator : AbstractValidator<GetUsers.Request>
     public GetUsersRequestValidator()
     {
 
-        RuleForEach(r => r.Modifiers.Filter.FilterActions)
+        RuleForEach(r => r.Modifiers.Filter!.FilterActions)
             .SetValidator(new FilterValidator())
             .When(r => r.Modifiers.Filter != null);
     }

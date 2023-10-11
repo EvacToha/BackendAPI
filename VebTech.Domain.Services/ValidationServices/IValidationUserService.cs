@@ -1,4 +1,6 @@
-﻿namespace VebTech.Domain.Services.ValidationServices;
+﻿using VebTech.Domain.Models.Entities;
+
+namespace VebTech.Domain.Services.ValidationServices;
 
 public interface IValidationUserService
 {
@@ -7,4 +9,6 @@ public interface IValidationUserService
     public Task<bool> IsExists(long userId , CancellationToken cancellationToken);
 
     public Task<bool> IsEmailBelongToUser(string email, long userId, CancellationToken cancellationToken);
+    
+    public Task<bool> IsRoleBelongToUser(UserRole userRole , long userId, CancellationToken cancellationToken);
 }

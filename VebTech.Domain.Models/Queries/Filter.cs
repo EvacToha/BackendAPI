@@ -1,12 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VebTech.Domain.Models.Entities;
 using Property = VebTech.Domain.Models.Queries.Modifiers.Property;
 
 namespace VebTech.Domain.Models.Queries;
-
-
 
 /// <summary>
 /// Оболочка для фильтров
@@ -47,8 +44,6 @@ public class FilterAction
 
     public FilterMethod Method {get; set; }
 }
-
-
 
 /// <summary>
 /// Реализация фильтров
@@ -131,5 +126,4 @@ public static class FilterQuery
                 .Where(u => u.Roles.Any(r => r.UserRole.ToString() == filterAction.FilterValue))
         };
     }
-    
 }

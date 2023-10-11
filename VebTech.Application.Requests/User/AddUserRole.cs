@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Services;

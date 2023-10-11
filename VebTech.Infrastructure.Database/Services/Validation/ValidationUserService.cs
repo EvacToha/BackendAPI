@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VebTech.Domain.Models.Entities;
 using VebTech.Domain.Services.ValidationServices;
 
 namespace VebTech.Infrastructure.Database.Services.Validation;
@@ -20,8 +21,15 @@ public class ValidationUserService : IValidationUserService
     
     public async Task<bool> IsEmailBelongToUser(string email, long userId, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(it => it.UserId == userId, cancellationToken);
+        var user = await _dbContext.Users.FirstAsync(u => u.UserId == userId, cancellationToken);
 
-        return user != null && user.Email == email;
+        return user.Email == email;
+    }
+    
+    public async Task<bool> IsRoleBelongToUser(UserRole userRole, long userId, CancellationToken cancellationToken)
+    {
+        var user = await _dbContext.Users.Include(u => u.Roles).FirstAsync(u => u.UserId == userId, cancellationToken);
+
+        return user.Roles.All(r => r.UserRole != userRole);
     }
 }
